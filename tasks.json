@@ -1,6 +1,6 @@
 {
-    "task1":false,
-    "task2":false,
-    "task3":false,
-    "task4":true
+    "wake_up_early":false,
+    "study":false,
+    "workout":false,
+    "cooking":true
 }
