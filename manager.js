@@ -1,116 +1,88 @@
+const file_name = "tasks.json"
+const fs = require('fs');
+const rl = require('readline-sync')
+// const rl = require('readline').createInterface(process.stdin, process.stdout);
 
+// Always read file since it is always needed
+let tasks = JSON.parse(fs.readFileSync( file_name ));
 
-console.log("Welcome to your task manager, Press: \n 1. to see all your tasks\n 2. to add a task\n 3. to delete a task\n 4. to mark a task as done\n 5. to Exit the task manager");
-
-const file_name = "tasks.json" // json'i ilerde degistirirsek kolaylik olur diye file name degiskenine atadik./ string
-const fs = require('fs');  // //js'nin kendi icinde external kutp var. Herh bir dosyadan acma, okuma, yazma yapmak icin. Dosya sist.(kutuphane)
-const readline = require('readline');//terminalden line okuyan baska bir kutuphane.
-var rl = readline.createInterface(process.stdin, process.stdout); // stdin = standart input // readline kutuphanesinin objesi demek ama bunu biz kendimiz belirledik
-
-const showtasks = () => {
-    fs.readFile( file_name , (err, data) => { //rf fonskuyonunun ikinci parametresi iki parametreli bi fonksyon biri err digeri file yani dosyanin icinde yazan tum data
-        if (err) throw err;
-        let tasks = JSON.parse(data); //jsondan okumus oldugum string veya array vya frkli bi data tipi
-        console.log(tasks);
-    });
+// selection 1
+const showTasks = () => {
+    console.log(tasks);
 }
 
-const addtask= ()=> {
-    var data = "";
-    rl.question("task_name :",(task)=>{
-        data = task;
-    })
-    console.log(data);
+// selection 2
+const addTask = () => {
+    const new_task = rl.question("task name to be added :")
 
-    fs.writeFile(file_name, JSON.stringify(data), err => {  // let data = JSON.stringify(student);
-        if (err) throw err;
-    });
+    if (tasks.hasOwnProperty(new_task)){
+        console.log("Task %s is already exist and marked as %s!", new_task, tasks[new_task] ? "done" : "un-done")
+    }
+    else{
+        tasks[new_task] = false;
+        fs.writeFileSync(file_name, JSON.stringify(tasks));
+    }
 }
 
-// fs.writeFile("./customer.json", JSON.stringify(customer), err => {
-//     if (err) console.log("Error writing file:", err);
-//   });
-////////////////////////////////////
-// let data = JSON.stringify(student);
+// selection 3
+const deleteTask = () => {
+    const task = rl.question("task name to be deleted :")
+    delete tasks[task];
+    fs.writeFileSync(file_name, JSON.stringify(tasks));
+}
 
-// fs.writeFile('student-3.json', data, (err) => {
-//     if (err) throw err;
-//     console.log('Data written to file');
-// });
-
-// console.log('This is after the write call');
+// selection 4
+const markDone = () => {
+    const task = rl.question("task name to be done :")
+    if (tasks.hasOwnProperty(task))
+    {
+        tasks[task] = true;
+        fs.writeFileSync(file_name, JSON.stringify(tasks));
+    }
+    else{
+        console.log("Task %s is not exist!", task)
+    }
+}
 
 const start_task_manager = () => {
 
-    rl.question("selection :", //terminalde cikacak bir soru ve inputu gosteriyor.//onceden inputu html uzerinden aliyorduk simdi js uzerinden aldik. // burada iki parametre var ikinsisi fonksyonumz
-    function(selection){ // (selection)=>{
+    console.log("\n\n\
+    Welcome to your task manager, Press:\n\
+    1. to see all your tasks\n\
+    2. to add a task\n\
+    3. to delete a task\n\
+    4. to mark a task as done\n\
+    5. to Exit the task manager");
 
-        if (selection == 1){
-            showtasks();
-            start_task_manager(); //recursive function call, kendisini tekrar etmk.
+    const selection = rl.question("Selection :")
 
+    if (selection == 5){
+        console.log("Manager Terminated!")
+    }
+    else{
+        if (selection == 1) {
+            showTasks();
         }
-        else if (selection == 2){
-            addtask();
-            start_task_manager();
+        else if (selection == 2) {
+            addTask();
         }
-
-        else if (selection == 3){
-            console.log(3);
-            start_task_manager();
+        else if (selection == 3) {
+            deleteTask();
         }
-
-        else if (selection == 4){
-            console.log(4);
-            start_task_manager();
+        else if (selection == 4) {
+            markDone();
         }
-
-        else if (selection==5){
-            rl.close();
-        }
-
         else {
-            console.log("invalid number")
-            start_task_manager();
+            console.log("invalid number!")
         }
-    });
-
+        start_task_manager();
+    }
 }
 
 start_task_manager();
 
-
-
-
-
-// == esittir demek degil
-// console.log(selection);
-//     rl.close();
-
-//  if(3<5 && 1<3){
-//     console.log("uc besten kucuktur");
-//  }
-
-
-//  function sub(a,b){
-//     console.log("yasin");
-//     return a + b;   // sonlandi demek
-//     console.log("munis");
-//  };
-//  console.log(sub(8,7));
-
-// function write2screen(x){
-//     if(x == 5){
-//         console.log("bom");
-//         write2screen(5);
-//     }
-//     else{
-//         console.log(x);
-//     }
-// }
-
-// write2screen(5);
-//key : value jsonla alakali
-
-
-
+// var a = 5;
+// var b = "yasin"
+// console.log('console log icinde degiskenimin degeri ' + a + ' dir diger degisken de '  + b + ' dir');
+// console.log('console log icinde degiskenimin degeri %d dir diger degisken de %s dir', a,b);
+// console.log(`console log icinde degiskenimin degeri ${a} dir diger degisken de ${b} dir`);
